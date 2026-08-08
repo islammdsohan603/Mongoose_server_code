@@ -48,6 +48,28 @@ router.post("/todos", async (req, res) => {
 
 router.post("/todos/all", async (req, res) => {
 
+  try {
+
+    const newTodos = await Todo.insertMany(req.body);
+
+    if (!newTodos) {
+      return res.status(400).json({
+        message: "Todos not created",
+      });
+    }
+
+    res.status(201).json({
+      message: "Todos created successfully",
+      todos: newTodos,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+
 })
 
 // put todo by id
