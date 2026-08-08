@@ -32,11 +32,28 @@ router.get("/todos", async (req, res) => {
 
 })
 
-// create a todo by id
+// Get a todo by ID
+router.get("/todos/:id", async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
 
-router.get("/todos/:id", async (req, res) => [
+    if (!todo) {
+      return res.status(404).json({
+        message: "Todo not found",
+      });
+    }
 
-])
+    res.status(200).json({
+      message: "Todo found successfully",
+      todo: todo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
 
 
 
