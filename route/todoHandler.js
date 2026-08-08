@@ -8,6 +8,27 @@ const Todo = require('../schema/todoSchema');
 
 router.get("/todos", async (req, res) => {
 
+  try {
+
+    const todos = await Todo.find({ status: 'active' });
+
+    if (!todos) {
+      return res.status(404).json({
+        message: "No todos found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Todos fetched successfully",
+      todos: todos,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
 
 })
 
@@ -17,7 +38,7 @@ router.get("/todos/:id", async (req, res) => [
 
 ])
 
-// post a todo
+
 
 // POST a todo
 router.post("/todos", async (req, res) => {
@@ -80,7 +101,10 @@ router.put("/todos/:id", async (req, res) => {
     const updatedTodo = await Todo.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+
+      { new: true },
+      { useFindAndModify: false }
+
     );
 
     // Todo খুঁজে পাওয়া যায়নি
