@@ -77,15 +77,10 @@ router.post("/todos/all", async (req, res) => {
 // PUT todo by ID
 router.put("/todos/:id", async (req, res) => {
   try {
-    const updatedTodo = await Todo.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          title: req.body.title,
-          description: req.body.description,
-          status: req.body.status,
-        },
-      }
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
     );
 
     // Todo খুঁজে পাওয়া যায়নি
