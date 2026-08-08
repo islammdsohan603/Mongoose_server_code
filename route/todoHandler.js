@@ -10,7 +10,7 @@ router.get("/todos", async (req, res) => {
 
   try {
 
-    const todos = await Todo.find({ status: 'active' });
+    const todos = await Todo.find().select({ _id: 1, title: 1 }).limit(2);
 
     if (!todos) {
       return res.status(404).json({
@@ -134,10 +134,28 @@ router.put("/todos/:id", async (req, res) => {
   }
 });
 
-// delete todo by id
-
+// Delete todo by ID
 router.delete("/todos/:id", async (req, res) => {
+  try {
+    const deletedTodo = await Todo.deleteOne({
+      _id: req.params.id,
+    });
 
-})
+    if (deletedTodo.deletedCount === 0) {
+      return res.status(404).json({
+        message: "Todo not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Todo deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
 
 module.exports = router;
