@@ -72,11 +72,48 @@ router.post("/todos/all", async (req, res) => {
 
 })
 
-// put todo by id
 
+
+// PUT todo by ID
 router.put("/todos/:id", async (req, res) => {
+  try {
+    const updatedTodo = await Todo.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          title: req.body.title,
+          description: req.body.description,
+          status: req.body.status,
+        },
+      }
+    );
 
-})
+    // Todo খুঁজে পাওয়া যায়নি
+    if (updatedTodo.matchedCount === 0) {
+      return res.status(404).json({
+        message: "Todo not found",
+      });
+    }
+
+    // Todo পাওয়া গেছে কিন্তু কোনো data change হয়নি
+    if (updatedTodo.modifiedCount === 0) {
+      return res.status(200).json({
+        message: "No changes made",
+        todo: updatedTodo,
+      });
+    }
+
+    res.status(200).json({
+      message: "Todo updated successfully",
+      todo: updatedTodo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
 
 // delete todo by id
 
